@@ -1,0 +1,48 @@
+version: '3.8'
+
+services:
+  payment-service:
+    build:
+      context: ./payment-service
+      dockerfile: Dockerfile
+    image: food-delivery-payment-service:latest
+    container_name: food_payment_service
+    ports:
+      - "5002:5002"
+    networks:
+      - food-delivery-net
+    restart: unless-stopped
+
+  delivery-service:
+    build:
+      context: ./delivery-service
+      dockerfile: Dockerfile
+    image: food-delivery-delivery-service:latest
+    container_name: food_delivery_service
+    ports:
+      - "5003:5003"
+    networks:
+      - food-delivery-net
+    restart: unless-stopped
+
+  order-service:
+    build:
+      context: ./order-service
+      dockerfile: Dockerfile
+    image: food-delivery-order-service:latest
+    container_name: food_order_service
+    ports:
+      - "5001:5001"
+    environment:
+      - PAYMENT_SERVICE_URL=http://payment-service:5002
+      - DELIVERY_SERVICE_URL=http://delivery-service:5003
+    depends_on:
+      - payment-service
+      - delivery-service
+    networks:
+      - food-delivery-net
+    restart: unless-stopped
+
+networks:
+  food-delivery-net:
+    driver: bridge
