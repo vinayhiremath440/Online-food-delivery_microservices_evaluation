@@ -1,3 +1,0 @@
-FROM my-python-app:latest
-
-RUN pip install --no-cache-dir requests
